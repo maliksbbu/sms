@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\User;
 use Validator;
+use Session;
 
 class AuthController extends Controller
 {
@@ -59,11 +60,16 @@ class AuthController extends Controller
       'password' => 'required|string',
       'remember_me' => 'boolean'
     ]);
-    $credentials = request(['email', 'password']);
+    $credentials = $request->only(['email', 'password']);
+    // dd($credentials);die;
     if (!Auth::attempt($credentials))
       return response()->json([
         'message' => 'Unauthorized'
       ], 401);
+    else{
+      return redirect('/dashboard');
+    } 
+    exit; 
     $user = $request->user();
     $tokenResult = $user->createToken('Personal Access Token');
     $token = $tokenResult->token;
@@ -84,12 +90,16 @@ class AuthController extends Controller
    *
    * @return [string] message
    */
-  public function logout(Request $request)
+  public function logout()
   {
-    $request->user()->token()->revoke();
-    return response()->json([
-      'message' => 'Successfully logged out'
-    ]);
+    // $request->user()->token()->revoke();
+    // return response()->json([
+    //   'message' => 'Successfully logged out'
+    // ]);
+    Session::flush();
+        Auth::logout();
+        return redirect(route('login'));
+
   }
 
   /**

@@ -15,7 +15,7 @@ use App\Http\Controllers\LanguageController;
 Auth::routes(['verify' => true]);
 
 // Main Page Route
-Route::get('/', 'DashboardController@dashboardEcommerce')->name('dashboard-ecommerce');
+// Route::get('/dashboard', 'DashboardController@dashboardEcommerce')->name('dashboard-ecommerce');
 
 /* Route Dashboards */
 Route::group(['prefix' => 'dashboard'], function () {
@@ -204,3 +204,29 @@ Route::get('/maps/leaflet', 'ChartsController@maps_leaflet')->name('map-leaflet'
 
 // locale Route
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
+
+// SMS web routes start 
+
+
+// Main Page Route
+//login page
+Route::get('/', 'AuthenticationController@login_v1');
+// Login submited page
+Route::post('/login', 'AuthController@login');
+// logout sumbited 
+Route::get('/logout', 'AuthController@logout');
+
+Route::group(['middleware' => ['auth']], function () {
+      // Dashboard
+      Route::get('/dashboard', 'DashboardController@dashboardEcommerce')->name('dashboard-ecommerce');
+
+      /* Transporter  Module */
+      Route::group(['prefix' => 'users'],function(){
+        Route::resource('/', 'UserController');
+        // Route::get('/view/{id}/transporters', 'UserController@transporter_list');
+    });
+});
+
+
+// SMS web routes end 
+
